@@ -1,0 +1,4 @@
+name = Subscriptions Forum
+description = Creates a block to subscribe to Forum Containers.
+package = "Subscriptions"
+core = 7.x

@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ *
+ * Tell Drupal about the Subscriptions Interface block.
+ *
+ * @ingroup hooks
+ */
+function subscriptions_forum_block_info() {
+  $blocks[0]['info'] = t('Forum Subscriptions');
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * Define the Subscriptions Interface block for node pages (depending on the Display Settings).
+ *
+ * @param int $delta
+ *
+ * @return array|null
+ *
+ * @ingroup hooks
+ */
+function subscriptions_forum_block_view($delta = 0) {
+  global $user;
+  $arg0 = arg(0);
+  $arg1 = arg(1);
+
+  $action = subscriptions_get_subscription($user->uid, 'node', 'tid', $arg1) ? 'del':'add';
+  $title = $action == 'del' ? t('Unsubscribe from Forum') : t('Subscribe to Forum');
+  $path = 'subscriptions/' . $action . '/taxa/' . $arg1;
+
+  if (in_array('taxa', array_keys(subscriptions_types())) && ($arg0 == 'forum' && is_numeric($arg1))) {
+    return array(
+      'subject' => $title,
+      'content' => menu_execute_active_handler($path, FALSE),
+    );
+  }
+  return NULL;
+}
+
+/**
+ * Implementation of hook_form_FORM_ID_alter()
+ */
+function subscriptions_forum_form_subscriptions_add_form_alter(&$form, &$form_state) {
+  // TODO: redirection isn't working for some reason.
+  $form_state['redirect'] = $_GET['q'];
+}
